@@ -1,0 +1,10 @@
+---
+title: "Tidytuesday R scripts"
+description: |
+  I am always looking to learn something new by doing rdstidytuesday. This is a place for me to share with the world what I am learning about coding with R.
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+

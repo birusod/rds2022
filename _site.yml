@@ -1,0 +1,15 @@
+name: "rdstt2022"
+title: "Birusod Tidytuesday Docs"
+theme: rdstt_theme.css
+description: |
+  Birusod Tidytuesday Docs
+output_dir: "docs"
+navbar:
+  right:
+    - text: "Home"
+      href: index.html
+    - text: "About"
+      href: about.html
+    - text: "2022 Week 11"
+      href: week11_2022.html
+output: distill::distill_article

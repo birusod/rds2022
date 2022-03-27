@@ -1,0 +1,106 @@
+---
+title: "2022-Week-11"
+author: "od"
+date: '2022-03-27'
+output: distill::distill_article
+---
+
+
+
+
+# Libraries
+
+```{r setup}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(tidytuesdayR)
+library(lubridate)
+library(extrafont)
+library(ggtext)
+library(showtext)
+library(MetBrewer)
+
+```
+
+# Load the weekly Data
+
+Download the weekly data and make available in the `tt` object.
+
+```{r Load}
+tt <- tt_load("2022-03-15")
+```
+
+
+```{r}
+data <- tt$cran %>%
+  mutate(
+    date = case_when(
+      grepl("^[[:digit:]]",date)   ~ as.Date(date), 
+      TRUE                         ~ as.Date(substr(date, 5, nchar(date)), 
+                                        '%b %d %H:%M:%S %Y')),
+    yearmonth = ym(format(date, "%Y-%m")),
+    year      = year(date))%>% 
+  group_by(package) %>% 
+  mutate(dur = max(year) - min(year),
+         n   = length(version)) %>% 
+  filter(dur >0) %>% 
+  mutate(avg = n / dur)
+```
+
+
+```{r, layout="l-body-outset", fig.width=6, fig.height=10}
+data %>% 
+  arrange(desc(avg)) %>% 
+  group_by(package) %>% 
+  filter(row_number() == 1) %>% 
+  head(50) %>% 
+  
+  ggplot(
+    aes(avg, 
+        fct_reorder(package, avg))
+    ) +
+  geom_point(
+    color = 'cyan', 
+    size = 4
+    )+
+  geom_segment(
+    aes(
+      x=0, xend=avg, 
+      y=package, yend=package) , 
+    size=1, 
+    color = 'cyan', 
+    alpha = .3
+    )+
+  scale_x_continuous(
+    limits = c(0, 21), 
+    expand = c(0, 0)
+    )+
+  labs(
+    y ='', x = '',
+    title = 'CRAN PACKAGES',
+    subtitle = 'Yearly Average Number of Versions: Top 50 packages'
+    ) +
+  theme_light()+
+  theme(
+    plot.background  = element_rect(fill = "#141227"),
+    panel.background = element_rect(fill = "#141227"),
+    panel.grid       = element_blank(),
+    axis.line        = element_blank(),
+    axis.ticks.y     = element_blank(),
+    axis.ticks.x     = element_blank(),
+    axis.text.y      = element_text(color = 'white', hjust=0, face = 'bold'),
+    axis.text.x      = element_text(color = 'white'),
+    panel.border     = element_blank(),
+    plot.margin      = unit(c(0, 2, 0, 0), 'cm'),
+    plot.title       = element_text(
+      face  = "bold",
+      size  = 24, 
+      hjust = 0, 
+      color = 'white'),
+    plot.subtitle   = element_text(
+      face  = "bold",
+      size  = 16, 
+      hjust = 0, 
+      color = "#c33c70"))
+```
+
